@@ -17,16 +17,15 @@ using MongoDB.Bson.Serialization.Attributes;
 using MongoDB.Driver;
 
 
-//In the payment service class I have some database functionality, it is the NoSQL to save Customer and Transaction information to the database.
-//You can also see the price for everything by clicking "Get Offer" before finishing the Payment with the button "Pay".
+// in this payment class I use the NoSQL to save Transaction and Customer information to the database. 
 
 namespace WebRole
 {
     public partial class Payment : System.Web.UI.Page
     {
-        private string connectionString = "mongodb+srv://andreuser:andrepw@andrecluster-fboow.azure.mongodb.net/test";
-        private string accountName = "andrelabb";
-        private string accountKey = "imhUePXWW0g1J301jU4clmbMbglQ/BvcSGUmBMtzI3HuwcMQnnogxMnhiHVOvKxgObr4Le5PYPHkhT7n7vCg4g==";
+        private string connectionString = "mongodb+srv://ville:hejhej@cluster0-7lagi.mongodb.net/test";
+        private string accountName = "villetorstenssonstorage3";
+        private string accountKey = "u042KcqxSZ3GgWwMGg500SMSAjj5ZuUVAuFaIPU90RvqBYGeFkjB8lh58qbVQRBWclWef7NyFUpvgosncufLdQ==";
         private StorageCredentials creds;
         private CloudStorageAccount storageAccount;
         private CloudQueueClient queueClient;
@@ -47,7 +46,7 @@ namespace WebRole
             string date = DateTime.Now.ToString();
 
             MongoClient dbClient = new MongoClient(connectionString);
-            var database = dbClient.GetDatabase("andreMongo");
+            var database = dbClient.GetDatabase("lab3cosmosdb");
             var customerTable = database.GetCollection<BsonDocument>("Customer");
             var transactionTable = database.GetCollection<BsonDocument>("Transactions");
 

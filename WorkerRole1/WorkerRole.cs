@@ -9,17 +9,62 @@ using Microsoft.WindowsAzure;
 using Microsoft.WindowsAzure.Diagnostics;
 using Microsoft.WindowsAzure.ServiceRuntime;
 using Microsoft.WindowsAzure.Storage;
+using Microsoft.WindowsAzure.Storage.Auth;
+using Microsoft.WindowsAzure.Storage.Queue;
+using System.Data.SqlClient;
+using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
+using MongoDB.Driver;
 
-namespace WorkerRole1
+
+// In this WorkerRole I have a button to save the bookings to the NoSql databas.
+
+namespace WorkerHRS
 {
-    public class WorkerRole : RoleEntryPoint
+    public class WorkerRoleHRS : RoleEntryPoint
     {
         private readonly CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
         private readonly ManualResetEvent runCompleteEvent = new ManualResetEvent(false);
 
+        private string accountName = "villetorstenssonstorage3";
+        private string accountKey = "u042KcqxSZ3GgWwMGg500SMSAjj5ZuUVAuFaIPU90RvqBYGeFkjB8lh58qbVQRBWclWef7NyFUpvgosncufLdQ==";
+        private string connectionString = "mongodb+srv://ville:hejhej@cluster0-7lagi.mongodb.net/test";
+        private StorageCredentials creds;
+        private CloudStorageAccount storageAccount;
+        private CloudQueueClient queueClient;
+        private CloudQueue inqueue, outqueue;
+        private CloudQueueMessage inMessage, outMessage;
+        private double price;
+
+
+
+
+        //the following method is called at the start of the worker role to get instances of incoming and outgoing queues 
+        private void initQueue()
+        {
+            creds = new StorageCredentials(accountName, accountKey);
+            storageAccount = new CloudStorageAccount(creds, useHttps: true);
+
+
+            // Create the queue client
+            queueClient = storageAccount.CreateCloudQueueClient();
+
+            // Retrieve a reference to a queue
+            inqueue = queueClient.GetQueueReference("crsqueue");
+
+            // Create the queue if it doesn't already exist
+            inqueue.CreateIfNotExists();
+
+            // Retrieve a reference to a queue
+            outqueue = queueClient.GetQueueReference("calculate2");
+
+            // Create the queue if it doesn't already exist
+            outqueue.CreateIfNotExists();
+        }
+
         public override void Run()
         {
-            Trace.TraceInformation("WorkerRole1 is running");
+            Trace.TraceInformation("WorkerCRS is running");
 
             try
             {
@@ -33,39 +78,124 @@ namespace WorkerRole1
 
         public override bool OnStart()
         {
-            // Set the maximum number of concurrent connections
-            ServicePointManager.DefaultConnectionLimit = 12;
 
-            // For information on handling configuration changes
-            // see the MSDN topic at https://go.microsoft.com/fwlink/?LinkId=166357.
+            ServicePointManager.DefaultConnectionLimit = 12;
 
             bool result = base.OnStart();
 
-            Trace.TraceInformation("WorkerRole1 has been started");
+            Trace.TraceInformation("WorkerCRS has been started");
 
             return result;
         }
 
         public override void OnStop()
         {
-            Trace.TraceInformation("WorkerRole1 is stopping");
+            Trace.TraceInformation("WorkerCRS is stopping");
 
             this.cancellationTokenSource.Cancel();
             this.runCompleteEvent.WaitOne();
 
             base.OnStop();
 
-            Trace.TraceInformation("WorkerRole1 has stopped");
+            Trace.TraceInformation("WorkerCRS has stopped");
         }
 
         private async Task RunAsync(CancellationToken cancellationToken)
         {
-            // TODO: Replace the following with your own logic.
+            initQueue();
             while (!cancellationToken.IsCancellationRequested)
             {
+                inMessage = null;
+
+                inMessage = await inqueue.GetMessageAsync();
+
+                if (inMessage != null)
+                {
+
+                    Console.WriteLine("Retrieved message with content '{0}'", inMessage.AsString);
+
+                    string s = inMessage.AsString;
+
+                    Trace.TraceInformation("***** Worker Received " + s);
+
+                    applicationLogic(s);
+
+                    await inqueue.DeleteMessageAsync(inMessage);
+
+                    outMessage = new CloudQueueMessage(price.ToString());
+                    outqueue.AddMessage(outMessage);
+                }
+
                 Trace.TraceInformation("Working");
                 await Task.Delay(1000);
             }
+        }
+        private void applicationLogic(string s)
+        {
+            string[] info = s.Split('*');
+            int travellers = int.Parse(info[0]);
+            int nights = int.Parse(info[1]);
+            int seniors = int.Parse(info[2]);
+            bool singleRoom, doubleRoom;
+
+
+
+            if (info[4] == "True")
+            {
+                singleRoom = true;
+            }
+            else
+            {
+                singleRoom = false;
+            }
+            if (info[5] == "True")
+            {
+                doubleRoom = true;
+            }
+            else
+            {
+                doubleRoom = false;
+            }
+            calPrice(travellers, nights, seniors, singleRoom, doubleRoom);
+        }
+
+        private void calPrice(int travellers, int nights, int seniors, bool singleRoom, bool doubleRoom)
+        {
+            MongoClient dbClient = new MongoClient(connectionString);
+            var database = dbClient.GetDatabase("andreMongo");
+            var bookingsTable = database.GetCollection<BsonDocument>("Bookings");
+            var bookDoc = new BsonDocument
+            {
+                {"travellers", travellers },
+                {"nights", nights },
+                {"seniors", seniors },
+                {"singleRoom", singleRoom },
+                {"doubleRoom", doubleRoom }
+            };
+
+            bookingsTable.InsertOneAsync(bookDoc);
+
+            price = 0.0;
+            double srPrice = 0.0;
+
+            if (singleRoom == true)
+            {
+                price = 600 * nights;
+            }
+            else if (doubleRoom == true)
+            {
+                price = 900 * nights;
+            }
+            else
+            {
+                price = 0;
+            }
+
+            srPrice = srPrice + price;
+            travellers = travellers - seniors;
+            price = price * travellers;
+            srPrice = (srPrice * seniors) * 0.5;
+            price = price + srPrice;
         }
     }
 }

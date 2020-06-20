@@ -11,7 +11,7 @@ namespace WebRole
 {
 
 
-    public partial class FRS
+    public partial class Flight
     {
 
         /// <summary>

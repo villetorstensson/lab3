@@ -5,8 +5,8 @@ using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 
-//This is just the last page that shows the customer that the payment is successfully done.
-//From here the full Report can be shown by clicking the button "View Reports" where both information from the SQL and NoSQL database will be shown.
+
+// This is the last page where the customer gets the confirmation of that the payment is done
 
 namespace WebRole
 {

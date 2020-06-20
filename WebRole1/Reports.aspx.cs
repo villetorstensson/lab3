@@ -9,19 +9,18 @@ using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 using MongoDB.Driver;
 
-//This is the report page that shows the information saved in the databases, both the SQL and NoSQL.
-//The SQL part can be seen in the Reports.aspx.
+// Here is where the information from both databases are shown
 
 namespace WebRole
 {
     public partial class Reports : System.Web.UI.Page
     {
-        private readonly string connectionString = "mongodb+srv://andreuser:andrepw@andrecluster-fboow.azure.mongodb.net/test";
+        private readonly string connectionString = "mongodb+srv://ville:hejhej@cluster0-7lagi.mongodb.net/test";
 
         protected void Page_Load(object sender, EventArgs e)
         {
             MongoClient dbClient = new MongoClient(connectionString);
-            var database = dbClient.GetDatabase("andreMongo");
+            var database = dbClient.GetDatabase("lab3cosmosdb");
             var getCustomer = database.GetCollection<BsonDocument>("Customer");
             var getTransactions = database.GetCollection<BsonDocument>("Transactions");
             var customerDoc = getCustomer.Find(new BsonDocument()).FirstOrDefault();

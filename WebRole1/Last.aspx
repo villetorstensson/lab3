@@ -16,7 +16,7 @@
         <asp:Label ID="LabelCost" runat="server" Text=""></asp:Label>
 
         <br />
-        <asp:Button ID="ReportButton" runat="server" Text="View Reports" Width="306px" Height="45px" OnClick="BtnReport"></asp:Button> 
+        <asp:Button ID="ReportButton" runat="server" Text="View Reports" Width="306px" Height="45px" OnClick="BtnReport" BackColor="Black" ForeColor="#CC0000"></asp:Button> 
        </div>
     </form>
 </body>

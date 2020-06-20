@@ -5,7 +5,7 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head runat="server">
-    <title>HRS</title>
+    <title>Payment</title>
 </head>
 <body style="height: 435px">
     <form id="form1" runat="server">
@@ -29,8 +29,8 @@
         <br />
         <br />
 
-        <asp:Button ID="offerButton" runat="server" Text="Get Offer" Width="306px" Height="45px" OnClick="BtnOffer"></asp:Button> 
-        <asp:Button ID="payButton" runat="server" Text="Pay" Width="306px" Height="45px" OnClick="BtnPay"></asp:Button> 
+        <asp:Button ID="offerButton" runat="server" Text="Get Offer" Width="306px" Height="45px" OnClick="BtnOffer" BackColor="Black" ForeColor="#CC0000"></asp:Button> 
+        <asp:Button ID="payButton" runat="server" Text="Pay" Width="306px" Height="45px" OnClick="BtnPay" BackColor="Black" ForeColor="#CC0000"></asp:Button> 
 
 
 
