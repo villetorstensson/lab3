@@ -7,7 +7,7 @@
 </head>
 <body style="height: 435px">
     <form id="form1" runat="server">
-        <h1>Payment Done!</h1>
+        <h1>Payment Successful!</h1>
         <div style="height: 407px">
 
         <asp:Label ID="LabelName" runat="server" Text=""></asp:Label>

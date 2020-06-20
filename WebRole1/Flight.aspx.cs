@@ -45,30 +45,27 @@ namespace WebRole
 
             try
             {
-                //Account and key are already initialized
+  
                 StorageCredentials creds = new StorageCredentials(storageName, storageKey);
                 CloudStorageAccount storageAccount = new CloudStorageAccount(creds, useHttps: true);
 
-                //Create an instance of a Cloud QueueClient object to access your queue in the storage
                 CloudQueueClient queueClient = storageAccount.CreateCloudQueueClient();
 
-                // Retrieve a reference to a specific queue
+              
                 CloudQueue queue = queueClient.GetQueueReference("frsqueue");
 
-                // Create the queue if it doesn't already exist
                 queue.CreateIfNotExists();
 
-                //remove any existing messages (just in case)
                 queue.Clear();
 
-                // Create a message and add it to the queue.
+                
                 string s = from + " -- " + to + " -- " + infants + " -- " + children + " -- " + adults + " -- " + seniors + " -- " + name;
 
                 CloudQueueMessage message = new CloudQueueMessage(s);
 
                 queue.AddMessage(message);
 
-                //Show in the console that some activity is going on in the Web Role
+           
                 Debug.WriteLine("Message : '" + message + " 'stored in Queue");
             }
             catch (Exception ex)

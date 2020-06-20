@@ -35,7 +35,7 @@ namespace WorkerFRS
         private SqlConnection conn;
         SqlCommand sqlCommand;
         SqlDataReader sqlReader;
-        //the following method is called at the start of the worker role to get instances of incoming and outgoing queues 
+       
         private void initQueue()
         {
             creds = new StorageCredentials(accountName, accountKey);
@@ -43,25 +43,21 @@ namespace WorkerFRS
             conn = new SqlConnection("Server = tcp:lab3.database.windows.net,1433; Initial Catalog = villetorstenssonlab3; Persist Security Info = False; User ID = ville; Password ={hejhej}; MultipleActiveResultSets = False; Encrypt = True; TrustServerCertificate = False; Connection Timeout = 30;");
 
 
-            // Create the queue client
+           
             queueClient = storageAccount.CreateCloudQueueClient();
 
-            // Retrieve a reference to a queue
             inqueue = queueClient.GetQueueReference("frsqueue");
 
-            // Create the queue if it doesn't already exist
             inqueue.CreateIfNotExists();
 
-            // Retrieve a reference to a queue
             outqueue = queueClient.GetQueueReference("calculate1");
 
-            // Create the queue if it doesn't already exist
             outqueue.CreateIfNotExists();
         }
 
         public override void Run()
         {
-            Trace.TraceInformation("WorkerFRS is running");
+            Trace.TraceInformation("Flight is running");
 
             try
             {
@@ -79,21 +75,21 @@ namespace WorkerFRS
 
             bool result = base.OnStart();
 
-            Trace.TraceInformation("WorkerFRS has been started");
+            Trace.TraceInformation("Flight has been started");
 
             return result;
         }
 
         public override void OnStop()
         {
-            Trace.TraceInformation("WorkerFRS is stopping");
+            Trace.TraceInformation("Flight is stopping");
 
             this.cancellationTokenSource.Cancel();
             this.runCompleteEvent.WaitOne();
 
             base.OnStop();
 
-            Trace.TraceInformation("WorkerFRS has stopped");
+            Trace.TraceInformation("Flight has stopped");
         }
 
         private async Task RunAsync(CancellationToken cancellationToken)

@@ -39,32 +39,27 @@ namespace WorkerHRS
 
 
 
-        //the following method is called at the start of the worker role to get instances of incoming and outgoing queues 
         private void initQueue()
         {
             creds = new StorageCredentials(accountName, accountKey);
             storageAccount = new CloudStorageAccount(creds, useHttps: true);
 
-
-            // Create the queue client
             queueClient = storageAccount.CreateCloudQueueClient();
 
-            // Retrieve a reference to a queue
             inqueue = queueClient.GetQueueReference("crsqueue");
 
-            // Create the queue if it doesn't already exist
+         
             inqueue.CreateIfNotExists();
 
-            // Retrieve a reference to a queue
             outqueue = queueClient.GetQueueReference("calculate2");
 
-            // Create the queue if it doesn't already exist
+           
             outqueue.CreateIfNotExists();
         }
 
         public override void Run()
         {
-            Trace.TraceInformation("WorkerCRS is running");
+            Trace.TraceInformation("Hotel is running");
 
             try
             {
@@ -83,21 +78,21 @@ namespace WorkerHRS
 
             bool result = base.OnStart();
 
-            Trace.TraceInformation("WorkerCRS has been started");
+            Trace.TraceInformation("Hotel has been started");
 
             return result;
         }
 
         public override void OnStop()
         {
-            Trace.TraceInformation("WorkerCRS is stopping");
+            Trace.TraceInformation("Hotel is stopping");
 
             this.cancellationTokenSource.Cancel();
             this.runCompleteEvent.WaitOne();
 
             base.OnStop();
 
-            Trace.TraceInformation("WorkerCRS has stopped");
+            Trace.TraceInformation("Hotel has stopped");
         }
 
         private async Task RunAsync(CancellationToken cancellationToken)

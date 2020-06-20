@@ -14,7 +14,7 @@ namespace WebRole
     {
         protected void Page_Load(object sender, EventArgs e)
         {
-            LabelName.Text = "Thank you for your booking!";
+            LabelName.Text = "Thank you for your booking, it has been payed successfully!";
         }
 
         //protected void BtnReport(object sender, EventArgs e)
